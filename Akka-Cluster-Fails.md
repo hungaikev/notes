@@ -152,3 +152,13 @@ Some cluster tools, such as Cluster aware routers, use the reachability informat
 The default size of the system messages bufffer is 20000 and it can be increased with configuration property `akka.remote.artery.advanced.system-message-buffer-size`. There is no drawback apart from possible memory consumption to increase this. The buffer is an `ArrayDeque` so it grows as needed, but doesn’t shrink.
 
 There is also another queue for outgoing control (system) messages and the max size of that is configured with `akka.remote.artery.advanced.outbound-control-queue-size`. The default is `3072`. This is a `LinkedBlockingQueue` so it’s also ok to increase. I think we should increase the default of this, by the way.
+
+
+### Akka Remote
+Remote deployment is not supported, including cluster aware pool routers. The reasons why it's not supported:
+
+ 1. It encourages an application design that is rather brittle. If the parent crashes it brings down all remote deployed childrens. That can be seen as a good feature, but often it probably used without realizing the consequences of the tight coupling.
+1. It introduces much complexity and special cases in the internals of Akka.
+It should be replaced by ordinary actor messaging protocols, such as a manager actor running on each node that is told to spawn children for certain tasks. The Cluster receptionist is useful for this interaction.
+
+This is not a complete description, but a start.
