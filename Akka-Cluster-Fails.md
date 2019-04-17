@@ -162,3 +162,24 @@ Remote deployment is not supported, including cluster aware pool routers. The re
 It should be replaced by ordinary actor messaging protocols, such as a manager actor running on each node that is told to spawn children for certain tasks. The Cluster receptionist is useful for this interaction.
 
 This is not a complete description, but a start.
+
+
+
+
+
+
+
+ Akka relies on heartbeats to detect that a node is unreachable. Heartbeats can be lost or delayed for lots of reasons like network connectivity and stability issues and garbage collection times.
+ 
+ In the case of Akka Persistence (and Cluster Singletons), failover times would mean, how long it takes that persistent actors or singletons are migrated from a node that has been downed to a healthy node. To estimate that time it makes sense to see what is involved in this process:
+
+1. Node(s) gets unavailable (network, GC, crashed, or something else)
+1. Other nodes in the cluster detect that situation by failing heartbeats. A failure detector eventually flags the node as unreachable.
+1. SBR listens to updates of the current cluster state and eventually receives information that a node was marked as unreachable.
+1. SBR waits that no updates happen for the stable-after time.
+1. SBR takes a decision and acts to down nodes and remove them from the cluster.
+1. Shard coordinators migrate persistent actors to another node
+1. Persistent actors start up at the new node.
+1. Migrated persistent actors load snapshots and/or replay events to load latest state.
+
+All of these steps will contribute to the total failover time. A clean crash of a node might run through these steps faster than if there's an unstable network condition where reachability is unstable for a while. With the usually recommended settings the whole process may take tens of seconds to minutes. You can tweak the settings for the process to run faster but you will have to run your own tests to see if this will end in unnecessary restarts (which make availability worse).
