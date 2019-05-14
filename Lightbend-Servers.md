@@ -7,7 +7,7 @@ Tags: Important,Lightbend
 
 `conduct info | grep sherpa`
 
-`ssh -i ConductR.pem [ubuntu@goldengate.typesafe.com](mailto:ubuntu@goldengate.typesafe.com)`
+`ssh -i ConductR.pem ubuntu@goldengate.typesafe.com`
 
 
 `cd sherpa/sherpa/sherpa-akka`
