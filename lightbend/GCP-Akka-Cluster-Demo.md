@@ -1,2 +1,0 @@
-# GCP Akka Cluster Demo
-

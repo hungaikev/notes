@@ -1,2 +1,0 @@
-# Rackspace Akka Cluster Demo
-

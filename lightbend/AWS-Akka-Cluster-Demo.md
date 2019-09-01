@@ -1,2 +1,0 @@
-# AWS Akka Cluster Demo
-
